@@ -25,12 +25,12 @@ app.use((req, res, next) => {
 
 app.post("/api/items", (req, res) => {
    console.log(req.body);
-  // it = JSON.parse(req.body);
-  // const item = new Item({
-  //   name: it.name,
-  //   description: it.description
-  // });
-  // item.save();
+  const item = new Item({
+    name: req.body.name,
+    description: req.body.description
+  });
+  console.log("item", item);
+  item.save();
   res.status(201).json({
     message: 'Item added succesfully'
   });
