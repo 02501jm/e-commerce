@@ -27,7 +27,13 @@ app.post("/api/items", (req, res) => {
    console.log(req.body);
   const item = new Item({
     name: req.body.name,
-    description: req.body.description
+    description: req.body.description,
+    price: req.body.price,
+    sold: req.body.sold,
+    followers: req.body.followers,
+    rating: req.body.rating,
+    comments: req.body.comments,
+    time: req.body.time
   });
   console.log("item", item);
   item.save();
@@ -37,6 +43,7 @@ app.post("/api/items", (req, res) => {
 });
 
 app.get("/api/items", (req, res) => {
+  res.send(Item.find({}));
   console.log('Entered getItems')
 });
 
