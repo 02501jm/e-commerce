@@ -43,8 +43,13 @@ app.post("/api/items", (req, res) => {
 });
 
 app.get("/api/items", (req, res) => {
-  res.send(Item.find({}));
-  console.log('Entered getItems')
+  Item.find()
+    .then(documents => {
+      res.status(200).json({
+        message:'Posts fetched succesfully',
+        posts:documents
+      })
+    })
 });
 
 

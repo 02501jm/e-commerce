@@ -8,7 +8,7 @@ const itemSchema = mongoose.Schema({
     followers: {type: Number},
     rating: {type: Number},
     comments: {type: String}, 
-    time: {type: number}
+    time: {type: Number}
 });
 
 module.exports = mongoose.model('Item', itemSchema);
