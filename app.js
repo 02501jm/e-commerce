@@ -42,6 +42,13 @@ app.post("/api/items", (req, res) => {
   });
 });
 
+app.post("/api/items/update", (req, res) => {
+  Item.findByIdAndUpdate(req.body.id, {price: req.body.price})
+    .then( document => {
+      res.send(document);
+    });
+});
+
 app.get("/api/items", (req, res) => {
   Item.find()
     .then(documents => {
