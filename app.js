@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const Item = require('./models/item');
+var AWS = require('aws-sdk');
 
 const app = express();
 
