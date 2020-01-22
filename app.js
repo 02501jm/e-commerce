@@ -3,7 +3,11 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const Item = require('./models/item');
 var AWS = require('aws-sdk');
-
+AWS.config.update({region: 'REGION'});
+s3 = new AWS.S3({apiVersion: '2006-03-01'});
+const bucket = "images-bucket4526";
+const keyName = 'hello_world.txt';
+var uploadParams = {Bucket: bucket, Key: 'hello_world.txt', Body: 'Hello World!'};
 const app = express();
 
 mongoose.connect("mongodb+srv://john:SinfoniaAcentuar@cluster0-hfzas.mongodb.net/commerce?retryWrites=true&w=majority", { useNewUrlParser: true})
@@ -60,5 +64,13 @@ app.get("/api/items", (req, res) => {
     })
 });
 
+app.post("/api/image/upload", (req, res) => {
+  var objectParams = {Bucket: 'images-bucket4526', Key: keyName, Body: 'Hello World!'};
+  var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+  uploadPromise.then(
+    function(data) {
+      console.log("Successfully uploaded data to " + bucketName + "/" + keyName);
+    });
+});
 
 module.exports = app;
