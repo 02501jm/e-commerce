@@ -64,7 +64,7 @@ app.get("/api/items", (req, res) => {
     })
 });
 
-app.post("/api/image/upload", (req, res) => {
+app.get("/api/image/upload", (req, res) => {
   var objectParams = {Bucket: 'images-bucket4526', Key: keyName, Body: 'Hello World!'};
   var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
   uploadPromise.then(
