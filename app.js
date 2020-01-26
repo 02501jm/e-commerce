@@ -3,11 +3,30 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const Item = require('./models/item');
 var AWS = require('aws-sdk');
-AWS.config.update({region: 'REGION'});
-s3 = new AWS.S3({apiVersion: '2006-03-01'});
-const bucket = "images-bucket4526";
-const keyName = 'hello_world.txt';
-var uploadParams = {Bucket: bucket, Key: 'hello_world.txt', Body: 'Hello World!'};
+var uuid = require('uuid');
+// Create unique bucket name
+var bucketName = 'node-sdk-sample-' + uuid.v4();
+// Create name for uploaded object key
+
+// Create a promise on S3 service object
+var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
+
+// Handle promise fulfilled/rejected states
+bucketPromise.then(
+  function(data) {
+    // Create params for putObject call
+    var objectParams = {Bucket: bucketName, Key: keyName, Body: 'Hello World!'};
+    // Create object upload promise
+    var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+    uploadPromise.then(
+      function(data) {
+        console.log("Successfully uploaded data to " + bucketName + "/" + keyName);
+      });
+}).catch(
+  function(err) {
+    console.error(err, err.stack);
+});
+
 const app = express();
 
 mongoose.connect("mongodb+srv://john:SinfoniaAcentuar@cluster0-hfzas.mongodb.net/commerce?retryWrites=true&w=majority", { useNewUrlParser: true})
@@ -46,7 +65,7 @@ app.post("/api/items", (req, res) => {
     message: 'Item added succesfully'
   });
 });
-
+ 
 app.post("/api/items/update", (req, res) => {
   Item.findByIdAndUpdate(req.body.id, {price: req.body.price})
     .then( document => {
@@ -71,6 +90,8 @@ app.get("/api/image/upload", (req, res) => {
     function(data) {
       console.log("Successfully uploaded data to " + bucketName + "/" + keyName);
     });
+    res.send('it executed');
+
 });
 
 module.exports = app;
