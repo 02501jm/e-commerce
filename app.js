@@ -3,30 +3,38 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const Item = require('./models/item');
 var AWS = require('aws-sdk');
+AWS.config.update({region:'us-east-2'});
+s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
+var uploadParams = {Bucket: 'images-bucket4526', Key: '', Body: ''};
+var file = 'helloworld.txt';
+var fs = require('fs');
+var fileStream = fs.createReadStream(file);
+fileStream.on('error', function(err) {
+  console.log('File Error', err);
+});
+uploadParams.Body = fileStream;
+var path = require('path');
+uploadParams.Key = path.basename(file);
+
+s3.upload (uploadparams, function (err, data){
+  if (err) {
+    console.log("Error", err);
+  } if (data) {
+    console.log("Upload Success", data.Location);
+  }
+})
+
+
 var uuid = require('uuid');
+
 // Create unique bucket name
 var bucketName = 'images-bucket4526';
 // Create name for uploaded object key
 var keyName = 'hello_world.txt';
 
-// Create a promise on S3 service object
-var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
 
-// Handle promise fulfilled/rejected states
-bucketPromise.then(
-  function(data) {
-    // Create params for putObject call
-    var objectParams = {Bucket: bucketName, Key: keyName, Body: 'Hello World!'};
-    // Create object upload promise
-    var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
-    uploadPromise.then(
-      function(data) {
-        console.log("Successfully uploaded data to " + bucketName + "/" + keyName);
-      });
-}).catch(
-  function(err) {
-    console.error(err, err.stack);
-});
+
 
 const app = express();
 
