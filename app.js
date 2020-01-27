@@ -17,7 +17,7 @@ uploadParams.Body = fileStream;
 var path = require('path');
 uploadParams.Key = path.basename(file);
 
-s3.upload (uploadparams, function (err, data){
+s3.upload (uploadParams, function (err, data){
   if (err) {
     console.log("Error", err);
   } if (data) {
