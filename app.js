@@ -25,6 +25,7 @@ mongoose.connect("mongodb+srv://john:SinfoniaAcentuar@cluster0-hfzas.mongodb.net
   .catch(() => {
     console.log('Connection Failed!');
   });
+
 app.use(fileUpload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));
@@ -73,7 +74,22 @@ app.get("/api/items", (req, res) => {
 });
 
 app.get("/api/image/upload", (req, res) => {
-  var fileStream = fs.createReadStream(file);
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send('No files were uploaded.');
+  }
+  let sampleFile = req.files.sampleFile;
+
+  // Use the mv() method to place the file somewhere on your server
+  let id = uuid();
+  let filename = id + '.jpg';
+  sampleFile.mv(__dirname + '/images/' + filename, function(err) {
+    if (err)
+      return res.status(500).send(err);
+
+    res.send('File uploaded!');
+    });
+
+  var fileStream = fs.createReadStream(__dirname + '/images/' + filename);
   fileStream.on('error', function(err) {
     console.log('File Error', err);
   });
