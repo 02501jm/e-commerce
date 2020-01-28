@@ -2,6 +2,19 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const Item = require('./models/item');
+var AWS = require('aws-sdk');
+AWS.config.update({region:'us-east-2'});
+s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
+var uploadParams = {Bucket: 'images-bucket4526', Key: '', Body: ''};
+var file = 'helloworld.txt';
+var fs = require('fs');
+
+var uuid = require('uuid');
+
+const fileUpload = require('express-fileupload');
+
+
 
 const app = express();
 
@@ -12,7 +25,7 @@ mongoose.connect("mongodb+srv://john:SinfoniaAcentuar@cluster0-hfzas.mongodb.net
   .catch(() => {
     console.log('Connection Failed!');
   });
-
+app.use(fileUpload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));
 
@@ -41,7 +54,7 @@ app.post("/api/items", (req, res) => {
     message: 'Item added succesfully'
   });
 });
-
+ 
 app.post("/api/items/update", (req, res) => {
   Item.findByIdAndUpdate(req.body.id, {price: req.body.price})
     .then( document => {
@@ -59,5 +72,25 @@ app.get("/api/items", (req, res) => {
     })
 });
 
+app.get("/api/image/upload", (req, res) => {
+  var fileStream = fs.createReadStream(file);
+  fileStream.on('error', function(err) {
+    console.log('File Error', err);
+  });
+  uploadParams.Body = fileStream;
+  var path = require('path');
+  uploadParams.Key = path.basename(file);
+  
+  s3.upload (uploadParams, function (err, data){
+    if (err) {
+      console.log("Error", err);
+      res.send(err);
+    } if (data) {
+      console.log("Upload Success", data.Location);
+      res.send(data.Location)
+      
+    }
+  })
+});
 
 module.exports = app;
