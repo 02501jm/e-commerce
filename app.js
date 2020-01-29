@@ -66,6 +66,7 @@ app.post("/api/items/update", (req, res) => {
 app.get("/api/items", (req, res) => {
   Item.find()
     .then(documents => {
+      console.log("posts fetched");
       res.status(200).json({
         message:'Posts fetched succesfully',
         posts:documents
@@ -103,7 +104,7 @@ app.get("/api/image/upload", (req, res) => {
       res.send(err);
     } if (data) {
       console.log("Upload Success", data.Location);
-      res.send(data.Location)
+      res.send(data.Location);
       
     }
   })
