@@ -75,6 +75,7 @@ app.get("/api/items", (req, res) => {
 });
 
 app.post("/api/image/upload", (req, res) => {
+  console.log("upload fired");
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send('No files were uploaded.');
   }
@@ -96,15 +97,15 @@ app.post("/api/image/upload", (req, res) => {
   });
   uploadParams.Body = fileStream;
   var path = require('path');
-  uploadParams.Key = path.basename(file);
+  uploadParams.Key = path.basename('/images/' + filename);
   
   s3.upload (uploadParams, function (err, data){
     if (err) {
       console.log("Error", err);
-      res.send(err);
+      //res.send(err);
     } if (data) {
       console.log("Upload Success", data.Location);
-      res.send(data.Location);
+      //res.send(data.Location);
       
     }
   })
