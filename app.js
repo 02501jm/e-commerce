@@ -7,6 +7,7 @@ AWS.config.update({region:'us-east-2'});
 s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 var uploadParams = {Bucket: 'images-bucket4526', Key: '', Body: ''};
+var downloadParams = {Bucket: 'images-bucket4526', Key: '03eb880c-5b7b-4891-9a99-22415a8755dc.jpg'};
 var file = 'helloworld.txt';
 var fs = require('fs');
 
@@ -109,6 +110,29 @@ app.post("/api/image/upload", (req, res) => {
       
     }
   })
+});
+
+app.get("/api/image", (req, res) => {
+  let param = {
+    Bucket: 'images-bucket4526',
+    MaxKeys: '10'
+  }
+  let images = [];
+  s3.listObjectsV2(param, function(err, data) {
+    var href = this.request.httpRequest.endpoint.href;
+    var bucketUrl = href + "images-bucket4526" + '/';
+
+    data.Contents.map(function(photo) { 
+      var photoKey = photo.Key;
+      var photoUrl = bucketUrl + encodeURIComponent(photoKey);
+      images.push(photoUrl);
+  }); 
+    if (err) console.log(err, err.stack); // an error occurred
+    else     console.log(data);           // successful response
+    res.send(images);
+  });
+  
+  
 });
 
 module.exports = app;
